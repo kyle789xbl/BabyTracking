@@ -1,16 +1,1663 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👶</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#3b82f6" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Baby Tracker</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Baby Tracker</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👶</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(to bottom, #eff6ff, #f8fafc);
+      min-height: 100vh;
+      color: #334155;
+    }
+
+    .header {
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      color: white;
+      padding: 1.25rem 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 32rem;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-email {
+      font-size: 0.75rem;
+      color: #bfdbfe;
+      margin-top: 0.125rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      width: 100%;
+      padding: 0.875rem;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #64748b;
+      flex: 1;
+      padding: 0.75rem;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .container {
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 1rem;
+      padding-bottom: 5rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #dbeafe;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-middle {
+      border-left: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+    }
+
+    .stat-value {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .stat-value.cyan { color: #06b6d4; }
+    .stat-value.amber { color: #f59e0b; }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    .last-feed {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #f1f5f9;
+      text-align: center;
+      font-size: 0.875rem;
+    }
+
+    .last-feed span {
+      color: #94a3b8;
+    }
+
+    .last-feed strong {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: white;
+      border-radius: 0.75rem;
+      padding: 0.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #dbeafe;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: #64748b;
+    }
+
+    .tab.active {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Chart */
+    .chart-container {
+      height: 9rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.25rem;
+      padding: 0.5rem 0;
+    }
+
+    .chart-bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+    }
+
+    .chart-bar-area {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .chart-bar {
+      width: 100%;
+      max-width: 1.5rem;
+      border-radius: 0.25rem 0.25rem 0 0;
+      background: #bfdbfe;
+      transition: height 0.3s;
+    }
+
+    .chart-bar.today {
+      background: #3b82f6;
+    }
+
+    .chart-bar.stacked {
+      border-radius: 0;
+    }
+
+    .chart-bar.stacked.top {
+      border-radius: 0.25rem 0.25rem 0 0;
+    }
+
+    .chart-bar.wet {
+      background: #06b6d4;
+    }
+
+    .chart-bar.dirty {
+      background: #f59e0b;
+    }
+
+    .chart-label {
+      font-size: 0.625rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .legend-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 0.25rem;
+    }
+
+    .legend-dot.cyan { background: #06b6d4; }
+    .legend-dot.amber { background: #f59e0b; }
+
+    /* Scroll Wheel */
+    .wheel-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .wheel-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wheel-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    .wheel {
+      position: relative;
+      height: 8.25rem;
+      width: 4.5rem;
+      overflow: hidden;
+    }
+
+    .wheel-fade-top, .wheel-fade-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2.75rem;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .wheel-fade-top {
+      top: 0;
+      background: linear-gradient(to bottom, white, transparent);
+      border-radius: 0.75rem 0.75rem 0 0;
+    }
+
+    .wheel-fade-bottom {
+      bottom: 0;
+      background: linear-gradient(to top, white, transparent);
+      border-radius: 0 0 0.75rem 0.75rem;
+    }
+
+    .wheel-highlight {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 2.75rem;
+      height: 2.75rem;
+      background: #eff6ff;
+      border-top: 2px solid #bfdbfe;
+      border-bottom: 2px solid #bfdbfe;
+      z-index: 0;
+    }
+
+    .wheel-scroll {
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      position: relative;
+      z-index: 5;
+    }
+
+    .wheel-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .wheel-item {
+      height: 2.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: center;
+      font-weight: 600;
+      color: #cbd5e1;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .wheel-item.selected {
+      color: #3b82f6;
+      font-size: 1.5rem;
+    }
+
+    .wheel-colon {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-top: 1.5rem;
+    }
+
+    .wheel-spacer {
+      width: 1rem;
+    }
+
+    /* Diaper Type Buttons */
+    .type-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .type-btn.wet.active {
+      background: #cffafe;
+      color: #0e7490;
+      border-color: #67e8f9;
+    }
+
+    .type-btn.dirty.active {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fcd34d;
+    }
+
+    .type-btn.both.active {
+      background: #f3e8ff;
+      color: #7c3aed;
+      border-color: #c4b5fd;
+    }
+
+    /* Feed/Diaper List */
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: #f8fafc;
+      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .list-item:hover {
+      background: #f1f5f9;
+    }
+
+    .list-item.editing {
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+    }
+
+    .list-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .list-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+    }
+
+    .list-icon.feed { background: #dbeafe; }
+    .list-icon.wet { background: #cffafe; }
+    .list-icon.dirty { background: #fef3c7; }
+    .list-icon.both { background: #f3e8ff; }
+
+    .list-item-info h4 {
+      font-weight: 600;
+      color: #334155;
+      font-size: 0.9375rem;
+    }
+
+    .list-item-info p {
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    .list-item-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .action-btn {
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #eff6ff;
+      color: #3b82f6;
+    }
+
+    .action-btn.delete:hover {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+
+    .date-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 1rem 0 0.5rem 0;
+    }
+
+    .date-header:first-child {
+      margin-top: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #94a3b8;
+    }
+
+    .empty-state .emoji {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Auth Screen */
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 24rem;
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo .emoji {
+      font-size: 3.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .auth-logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .auth-logo p {
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 0.75rem;
+      padding: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 0.625rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: #64748b;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: #3b82f6;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .auth-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.375rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.3);
+    }
+
+    .auth-footer {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      margin-top: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .reset-btn {
+      font-size: 0.75rem;
+      color: #3b82f6;
+      font-weight: 500;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      color: #2563eb;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .button-row .btn-primary {
+      flex: 1;
+    }
+
+    .loading {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading .emoji {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .loading p {
+      color: #3b82f6;
+      font-weight: 500;
+      font-size: 1.125rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .type-label-center {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading">
+    <div class="emoji">👶</div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="auth-container hidden">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="emoji">👶</div>
+        <h1>Baby Tracker</h1>
+        <p>Track feeds & diapers</p>
+      </div>
+      <div class="card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="setAuthMode('login')">Log In</button>
+          <button class="auth-tab" onclick="setAuthMode('signup')">Sign Up</button>
+        </div>
+        <div id="auth-error" class="auth-error hidden"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="auth-email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••">
+        </div>
+        <div class="form-group hidden" id="confirm-password-group">
+          <label>Confirm Password</label>
+          <input type="password" id="auth-confirm-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" id="auth-submit-btn" onclick="handleAuth()">Log In</button>
+      </div>
+      <p class="auth-footer">Your data is securely stored and synced across devices</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen" class="hidden">
+    <div class="header">
+      <div class="header-content">
+        <div>
+          <h1><span>👶</span> Baby Tracker</h1>
+          <p class="header-email" id="user-email"></p>
+        </div>
+        <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" id="tab-feeds" onclick="switchTab('feeds')">
+          <span>🍼</span> Feeds
+        </button>
+        <button class="tab" id="tab-diapers" onclick="switchTab('diapers')">
+          <span>🧷</span> Diapers
+        </button>
+      </div>
+
+      <!-- Feeds Tab -->
+      <div id="feeds-tab">
+        <!-- Today's Stats -->
+        <div class="card">
+          <h3 class="card-title">Today's Feeds</h3>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-value" id="feed-total-oz">0</div>
+              <div class="stat-label">Total oz</div>
+            </div>
+            <div class="stat stat-middle">
+              <div class="stat-value" id="feed-count">0</div>
+              <div class="stat-label">Feeds</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="feed-avg">0</div>
+              <div class="stat-label">Avg oz</div>
+            </div>
+          </div>
+          <div class="last-feed" id="last-feed-time"></div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card">
+          <h3 class="card-title">Last 14 Days</h3>
+          <div class="chart-container" id="feed-chart"></div>
+        </div>
+
+        <!-- Log Feed -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="feed-form-title">Log Feed</h3>
+            <button class="reset-btn" onclick="resetToCurrentTime()">Reset to Now</button>
+          </div>
+          <div class="wheel-container" id="feed-wheels">
+            <!-- Wheels rendered by JS -->
+          </div>
+          <div class="button-row">
+            <button class="btn btn-secondary hidden" id="feed-cancel-btn" onclick="cancelFeedEdit()">Cancel</button>
+            <button class="btn btn-primary" id="feed-submit-btn" onclick="saveFeed()">Log Feed</button>
+          </div>
+        </div>
+
+        <!-- Recent Feeds -->
+        <div class="card">
+          <h3 class="card-title">Recent Feeds</h3>
+          <div id="feeds-list"></div>
+        </div>
+      </div>
+
+      <!-- Diapers Tab -->
+      <div id="diapers-tab" class="hidden">
+        <!-- Today's Stats -->
+        <div class="card">
+          <h3 class="card-title">Today's Diapers</h3>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-value" id="diaper-total">0</div>
+              <div class="stat-label">Total</div>
+            </div>
+            <div class="stat stat-middle">
+              <div class="stat-value cyan" id="diaper-wet">0</div>
+              <div class="stat-label">💧 Wet</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value amber" id="diaper-dirty">0</div>
+              <div class="stat-label">💩 Dirty</div>
+            </div>
+          </div>
+          <div class="last-feed" id="last-diaper-time"></div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card">
+          <h3 class="card-title">Last 14 Days</h3>
+          <div class="chart-container" id="diaper-chart"></div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot cyan"></div><span>Wet</span></div>
+            <div class="legend-item"><div class="legend-dot amber"></div><span>Dirty</span></div>
+          </div>
+        </div>
+
+        <!-- Log Diaper -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="diaper-form-title">Log Diaper</h3>
+            <button class="reset-btn" onclick="resetToCurrentTime()">Reset to Now</button>
+          </div>
+          <div class="type-label-center">Type</div>
+          <div class="type-buttons">
+            <button class="type-btn wet active" onclick="setDiaperType('wet')">💧 Wet</button>
+            <button class="type-btn dirty" onclick="setDiaperType('dirty')">💩 Dirty</button>
+            <button class="type-btn both" onclick="setDiaperType('both')">💧💩 Both</button>
+          </div>
+          <div class="wheel-container" id="diaper-wheels">
+            <!-- Wheels rendered by JS -->
+          </div>
+          <div class="button-row">
+            <button class="btn btn-secondary hidden" id="diaper-cancel-btn" onclick="cancelDiaperEdit()">Cancel</button>
+            <button class="btn btn-primary" id="diaper-submit-btn" onclick="saveDiaper()">Log Diaper</button>
+          </div>
+        </div>
+
+        <!-- Recent Diapers -->
+        <div class="card">
+          <h3 class="card-title">Recent Diapers</h3>
+          <div id="diapers-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Config
+    const FIREBASE_URL = 'https://babymonitor-19eba-default-rtdb.firebaseio.com';
+    const FIREBASE_API_KEY = 'AIzaSyDGas0vg_7l5XXfvxJLsASoV81MqBQxCzk';
+    const AUTH_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
+    const AUTH_LOGIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
+
+    // State
+    let user = null;
+    let authMode = 'login';
+    let feeds = [];
+    let diapers = [];
+    let selectedHour = new Date().getHours();
+    let selectedMinute = new Date().getMinutes();
+    let selectedOunces = 4;
+    let selectedDiaperType = 'wet';
+    let editingFeedId = null;
+    let editingDiaperId = null;
+
+    const ouncesValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+    });
+
+    function checkAuth() {
+      const savedAuth = localStorage.getItem('babyMonitorAuth');
+      if (savedAuth) {
+        try {
+          const authData = JSON.parse(savedAuth);
+          if (authData.expiresAt > Date.now()) {
+            user = authData;
+            showApp();
+            return;
+          }
+        } catch (e) {
+          localStorage.removeItem('babyMonitorAuth');
+        }
+      }
+      showAuth();
+    }
+
+    function showAuth() {
+      document.getElementById('loading-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+      document.getElementById('app-screen').classList.add('hidden');
+    }
+
+    function showApp() {
+      document.getElementById('loading-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('user-email').textContent = user.email;
+      initWheels();
+      fetchFeeds();
+      fetchDiapers();
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      document.querySelectorAll('.auth-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', (mode === 'login' && i === 0) || (mode === 'signup' && i === 1));
+      });
+      document.getElementById('confirm-password-group').classList.toggle('hidden', mode === 'login');
+      document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Log In' : 'Create Account';
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    async function handleAuth() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const confirmPassword = document.getElementById('auth-confirm-password').value;
+      const errorEl = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      errorEl.classList.add('hidden');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Please fill in all fields';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      if (authMode === 'signup' && password !== confirmPassword) {
+        errorEl.textContent = 'Passwords do not match';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      if (password.length < 6) {
+        errorEl.textContent = 'Password must be at least 6 characters';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span>Processing...';
+
+      try {
+        const url = authMode === 'signup' ? AUTH_SIGNUP_URL : AUTH_LOGIN_URL;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, returnSecureToken: true })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          const messages = {
+            'EMAIL_EXISTS': 'An account with this email already exists',
+            'EMAIL_NOT_FOUND': 'No account found with this email',
+            'INVALID_PASSWORD': 'Incorrect password',
+            'INVALID_LOGIN_CREDENTIALS': 'Invalid email or password',
+            'WEAK_PASSWORD': 'Password must be at least 6 characters'
+          };
+          errorEl.textContent = messages[data.error.message] || data.error.message;
+          errorEl.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = authMode === 'login' ? 'Log In' : 'Create Account';
+          return;
+        }
+
+        user = {
+          idToken: data.idToken,
+          refreshToken: data.refreshToken,
+          localId: data.localId,
+          email: data.email,
+          expiresAt: Date.now() + (parseInt(data.expiresIn) * 1000)
+        };
+
+        localStorage.setItem('babyMonitorAuth', JSON.stringify(user));
+        showApp();
+
+      } catch (error) {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = authMode === 'login' ? 'Log In' : 'Create Account';
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('babyMonitorAuth');
+      user = null;
+      feeds = [];
+      diapers = [];
+      showAuth();
+    }
+
+    // Tabs
+    function switchTab(tab) {
+      document.getElementById('tab-feeds').classList.toggle('active', tab === 'feeds');
+      document.getElementById('tab-diapers').classList.toggle('active', tab === 'diapers');
+      document.getElementById('feeds-tab').classList.toggle('hidden', tab !== 'feeds');
+      document.getElementById('diapers-tab').classList.toggle('hidden', tab !== 'diapers');
+    }
+
+    // Scroll Wheels
+    function initWheels() {
+      renderFeedWheels();
+      renderDiaperWheels();
+    }
+
+    function renderFeedWheels() {
+      const container = document.getElementById('feed-wheels');
+      container.innerHTML = `
+        ${createWheel('Hour', 24, selectedHour, 'feed-hour')}
+        <div class="wheel-colon">:</div>
+        ${createWheel('Min', 60, selectedMinute, 'feed-min')}
+        <div class="wheel-spacer"></div>
+        ${createWheelOunces()}
+      `;
+      setupWheelListeners();
+    }
+
+    function renderDiaperWheels() {
+      const container = document.getElementById('diaper-wheels');
+      container.innerHTML = `
+        ${createWheel('Hour', 24, selectedHour, 'diaper-hour')}
+        <div class="wheel-colon">:</div>
+        ${createWheel('Min', 60, selectedMinute, 'diaper-min')}
+      `;
+      setupWheelListeners();
+    }
+
+    function createWheel(label, count, selected, id) {
+      let items = '<div class="wheel-item"></div>';
+      for (let i = 0; i < count; i++) {
+        const isSelected = i === selected ? 'selected' : '';
+        items += `<div class="wheel-item ${isSelected}" data-value="${i}">${i.toString().padStart(2, '0')}</div>`;
+      }
+      items += '<div class="wheel-item"></div>';
+
+      return `
+        <div class="wheel-wrapper">
+          <div class="wheel-label">${label}</div>
+          <div class="wheel">
+            <div class="wheel-fade-top"></div>
+            <div class="wheel-fade-bottom"></div>
+            <div class="wheel-highlight"></div>
+            <div class="wheel-scroll" id="${id}" data-type="${id}">${items}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createWheelOunces() {
+      let items = '<div class="wheel-item"></div>';
+      ouncesValues.forEach(oz => {
+        const isSelected = oz === selectedOunces ? 'selected' : '';
+        items += `<div class="wheel-item ${isSelected}" data-value="${oz}">${oz}</div>`;
+      });
+      items += '<div class="wheel-item"></div>';
+
+      return `
+        <div class="wheel-wrapper">
+          <div class="wheel-label">Ounces</div>
+          <div class="wheel">
+            <div class="wheel-fade-top"></div>
+            <div class="wheel-fade-bottom"></div>
+            <div class="wheel-highlight"></div>
+            <div class="wheel-scroll" id="feed-oz" data-type="feed-oz">${items}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setupWheelListeners() {
+      document.querySelectorAll('.wheel-scroll').forEach(wheel => {
+        const type = wheel.dataset.type;
+        const itemHeight = 44;
+
+        // Set initial scroll position
+        let initialIndex = 0;
+        if (type === 'feed-hour' || type === 'diaper-hour') initialIndex = selectedHour;
+        else if (type === 'feed-min' || type === 'diaper-min') initialIndex = selectedMinute;
+        else if (type === 'feed-oz') initialIndex = ouncesValues.indexOf(selectedOunces);
+
+        wheel.scrollTop = initialIndex * itemHeight;
+
+        wheel.addEventListener('scroll', () => {
+          const index = Math.round(wheel.scrollTop / itemHeight);
+          updateWheelSelection(wheel, type, index);
+        });
+
+        wheel.addEventListener('scrollend', () => {
+          const index = Math.round(wheel.scrollTop / itemHeight);
+          wheel.scrollTo({ top: index * itemHeight, behavior: 'smooth' });
+        });
+
+        wheel.querySelectorAll('.wheel-item[data-value]').forEach((item, i) => {
+          item.addEventListener('click', () => {
+            wheel.scrollTo({ top: i * itemHeight, behavior: 'smooth' });
+          });
+        });
+      });
+    }
+
+    function updateWheelSelection(wheel, type, index) {
+      const items = wheel.querySelectorAll('.wheel-item[data-value]');
+      items.forEach((item, i) => {
+        item.classList.toggle('selected', i === index);
+      });
+
+      const value = items[index]?.dataset.value;
+      if (value === undefined) return;
+
+      if (type === 'feed-hour' || type === 'diaper-hour') {
+        selectedHour = parseInt(value);
+      } else if (type === 'feed-min' || type === 'diaper-min') {
+        selectedMinute = parseInt(value);
+      } else if (type === 'feed-oz') {
+        selectedOunces = parseFloat(value);
+      }
+    }
+
+    function resetToCurrentTime() {
+      const now = new Date();
+      selectedHour = now.getHours();
+      selectedMinute = now.getMinutes();
+      selectedOunces = 4;
+      initWheels();
+    }
+
+    // Diaper Type
+    function setDiaperType(type) {
+      selectedDiaperType = type;
+      document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.classList.contains(type)) btn.classList.add('active');
+      });
+    }
+
+    // Feeds CRUD
+    async function fetchFeeds() {
+      if (!user) return;
+      try {
+        const response = await fetch(`${FIREBASE_URL}/users/${user.localId}/feeds.json?auth=${user.idToken}`);
+        const data = await response.json();
+        if (data && !data.error) {
+          feeds = Object.entries(data).map(([id, feed]) => ({ id, ...feed }))
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        } else {
+          feeds = [];
+        }
+        renderFeeds();
+        renderFeedStats();
+        renderFeedChart();
+      } catch (error) {
+        console.error('Error fetching feeds:', error);
+      }
+    }
+
+    async function saveFeed() {
+      if (!user) return;
+
+      const now = new Date();
+      const feedTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), selectedHour, selectedMinute);
+
+      const feedData = {
+        timestamp: feedTime.toISOString(),
+        ounces: selectedOunces,
+        createdAt: now.toISOString()
+      };
+
+      try {
+        if (editingFeedId) {
+          await fetch(`${FIREBASE_URL}/users/${user.localId}/feeds/${editingFeedId}.json?auth=${user.idToken}`, {
+            method: 'PUT',
+            body: JSON.stringify(feedData)
+          });
+          editingFeedId = null;
+          document.getElementById('feed-form-title').textContent = 'Log Feed';
+          document.getElementById('feed-submit-btn').textContent = 'Log Feed';
+          document.getElementById('feed-cancel-btn').classList.add('hidden');
+        } else {
+          await fetch(`${FIREBASE_URL}/users/${user.localId}/feeds.json?auth=${user.idToken}`, {
+            method: 'POST',
+            body: JSON.stringify(feedData)
+          });
+        }
+        resetToCurrentTime();
+        fetchFeeds();
+      } catch (error) {
+        console.error('Error saving feed:', error);
+      }
+    }
+
+    async function deleteFeed(id) {
+      if (!user) return;
+      try {
+        await fetch(`${FIREBASE_URL}/users/${user.localId}/feeds/${id}.json?auth=${user.idToken}`, {
+          method: 'DELETE'
+        });
+        fetchFeeds();
+      } catch (error) {
+        console.error('Error deleting feed:', error);
+      }
+    }
+
+    function editFeed(id) {
+      const feed = feeds.find(f => f.id === id);
+      if (!feed) return;
+
+      const date = new Date(feed.timestamp);
+      selectedHour = date.getHours();
+      selectedMinute = date.getMinutes();
+      selectedOunces = feed.ounces;
+      editingFeedId = id;
+
+      document.getElementById('feed-form-title').textContent = 'Edit Feed';
+      document.getElementById('feed-submit-btn').textContent = 'Update';
+      document.getElementById('feed-cancel-btn').classList.remove('hidden');
+
+      renderFeedWheels();
+      renderFeeds();
+    }
+
+    function cancelFeedEdit() {
+      editingFeedId = null;
+      document.getElementById('feed-form-title').textContent = 'Log Feed';
+      document.getElementById('feed-submit-btn').textContent = 'Log Feed';
+      document.getElementById('feed-cancel-btn').classList.add('hidden');
+      resetToCurrentTime();
+      renderFeeds();
+    }
+
+    function renderFeeds() {
+      const container = document.getElementById('feeds-list');
+
+      if (feeds.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="emoji">🍼</div><p>No feeds logged yet</p></div>';
+        return;
+      }
+
+      let html = '';
+      let lastDate = '';
+
+      feeds.slice(0, 15).forEach(feed => {
+        const dateStr = formatDate(feed.timestamp);
+        if (dateStr !== lastDate) {
+          html += `<div class="date-header">${dateStr}</div>`;
+          lastDate = dateStr;
+        }
+
+        const isEditing = editingFeedId === feed.id ? 'editing' : '';
+        html += `
+          <div class="list-item ${isEditing}">
+            <div class="list-item-left">
+              <div class="list-icon feed">🍼</div>
+              <div class="list-item-info">
+                <h4>${feed.ounces} oz</h4>
+                <p>${formatTime(feed.timestamp)}</p>
+              </div>
+            </div>
+            <div class="list-item-actions">
+              <button class="action-btn" onclick="editFeed('${feed.id}')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button class="action-btn delete" onclick="deleteFeed('${feed.id}')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderFeedStats() {
+      const today = new Date();
+      const dayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const todayFeeds = feeds.filter(f => new Date(f.timestamp) >= dayStart);
+
+      const totalOz = todayFeeds.reduce((sum, f) => sum + f.ounces, 0);
+      const count = todayFeeds.length;
+      const avg = count > 0 ? (totalOz / count).toFixed(1) : '0';
+
+      document.getElementById('feed-total-oz').textContent = totalOz;
+      document.getElementById('feed-count').textContent = count;
+      document.getElementById('feed-avg').textContent = avg;
+
+      const lastFeedEl = document.getElementById('last-feed-time');
+      if (todayFeeds.length > 0) {
+        const lastTime = new Date(Math.max(...todayFeeds.map(f => new Date(f.timestamp))));
+        lastFeedEl.innerHTML = `<span>Last feed: </span><strong>${getTimeSince(lastTime)}</strong>`;
+      } else {
+        lastFeedEl.innerHTML = '';
+      }
+    }
+
+    function renderFeedChart() {
+      const container = document.getElementById('feed-chart');
+      const data = getLast14DaysData(feeds, 'ounces');
+      const max = Math.max(...data.map(d => d.value), 20);
+
+      let html = '';
+      data.forEach(d => {
+        const height = max > 0 ? (d.value / max) * 100 : 0;
+        const todayClass = d.isToday ? 'today' : '';
+        html += `
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar-area">
+              <div class="chart-bar ${todayClass}" style="height: ${height}%"></div>
+            </div>
+            <div class="chart-label">${d.label}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Diapers CRUD
+    async function fetchDiapers() {
+      if (!user) return;
+      try {
+        const response = await fetch(`${FIREBASE_URL}/users/${user.localId}/diapers.json?auth=${user.idToken}`);
+        const data = await response.json();
+        if (data && !data.error) {
+          diapers = Object.entries(data).map(([id, diaper]) => ({ id, ...diaper }))
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        } else {
+          diapers = [];
+        }
+        renderDiapers();
+        renderDiaperStats();
+        renderDiaperChart();
+      } catch (error) {
+        console.error('Error fetching diapers:', error);
+      }
+    }
+
+    async function saveDiaper() {
+      if (!user) return;
+
+      const now = new Date();
+      const diaperTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), selectedHour, selectedMinute);
+
+      const diaperData = {
+        timestamp: diaperTime.toISOString(),
+        type: selectedDiaperType,
+        createdAt: now.toISOString()
+      };
+
+      try {
+        if (editingDiaperId) {
+          await fetch(`${FIREBASE_URL}/users/${user.localId}/diapers/${editingDiaperId}.json?auth=${user.idToken}`, {
+            method: 'PUT',
+            body: JSON.stringify(diaperData)
+          });
+          editingDiaperId = null;
+          document.getElementById('diaper-form-title').textContent = 'Log Diaper';
+          document.getElementById('diaper-submit-btn').textContent = 'Log Diaper';
+          document.getElementById('diaper-cancel-btn').classList.add('hidden');
+        } else {
+          await fetch(`${FIREBASE_URL}/users/${user.localId}/diapers.json?auth=${user.idToken}`, {
+            method: 'POST',
+            body: JSON.stringify(diaperData)
+          });
+        }
+        resetToCurrentTime();
+        setDiaperType('wet');
+        fetchDiapers();
+      } catch (error) {
+        console.error('Error saving diaper:', error);
+      }
+    }
+
+    async function deleteDiaper(id) {
+      if (!user) return;
+      try {
+        await fetch(`${FIREBASE_URL}/users/${user.localId}/diapers/${id}.json?auth=${user.idToken}`, {
+          method: 'DELETE'
+        });
+        fetchDiapers();
+      } catch (error) {
+        console.error('Error deleting diaper:', error);
+      }
+    }
+
+    function editDiaper(id) {
+      const diaper = diapers.find(d => d.id === id);
+      if (!diaper) return;
+
+      const date = new Date(diaper.timestamp);
+      selectedHour = date.getHours();
+      selectedMinute = date.getMinutes();
+      selectedDiaperType = diaper.type;
+      editingDiaperId = id;
+
+      document.getElementById('diaper-form-title').textContent = 'Edit Diaper';
+      document.getElementById('diaper-submit-btn').textContent = 'Update';
+      document.getElementById('diaper-cancel-btn').classList.remove('hidden');
+
+      setDiaperType(diaper.type);
+      renderDiaperWheels();
+      renderDiapers();
+    }
+
+    function cancelDiaperEdit() {
+      editingDiaperId = null;
+      document.getElementById('diaper-form-title').textContent = 'Log Diaper';
+      document.getElementById('diaper-submit-btn').textContent = 'Log Diaper';
+      document.getElementById('diaper-cancel-btn').classList.add('hidden');
+      resetToCurrentTime();
+      setDiaperType('wet');
+      renderDiapers();
+    }
+
+    function renderDiapers() {
+      const container = document.getElementById('diapers-list');
+
+      if (diapers.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="emoji">🧷</div><p>No diapers logged yet</p></div>';
+        return;
+      }
+
+      let html = '';
+      let lastDate = '';
+
+      const typeEmoji = { wet: '💧', dirty: '💩', both: '💧💩' };
+      const typeLabel = { wet: 'Wet', dirty: 'Dirty', both: 'Both' };
+
+      diapers.slice(0, 15).forEach(diaper => {
+        const dateStr = formatDate(diaper.timestamp);
+        if (dateStr !== lastDate) {
+          html += `<div class="date-header">${dateStr}</div>`;
+          lastDate = dateStr;
+        }
+
+        const isEditing = editingDiaperId === diaper.id ? 'editing' : '';
+        html += `
+          <div class="list-item ${isEditing}">
+            <div class="list-item-left">
+              <div class="list-icon ${diaper.type}">${typeEmoji[diaper.type] || '👶'}</div>
+              <div class="list-item-info">
+                <h4>${typeLabel[diaper.type] || diaper.type}</h4>
+                <p>${formatTime(diaper.timestamp)}</p>
+              </div>
+            </div>
+            <div class="list-item-actions">
+              <button class="action-btn" onclick="editDiaper('${diaper.id}')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button class="action-btn delete" onclick="deleteDiaper('${diaper.id}')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderDiaperStats() {
+      const today = new Date();
+      const dayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const todayDiapers = diapers.filter(d => new Date(d.timestamp) >= dayStart);
+
+      const total = todayDiapers.length;
+      const wet = todayDiapers.filter(d => d.type === 'wet' || d.type === 'both').length;
+      const dirty = todayDiapers.filter(d => d.type === 'dirty' || d.type === 'both').length;
+
+      document.getElementById('diaper-total').textContent = total;
+      document.getElementById('diaper-wet').textContent = wet;
+      document.getElementById('diaper-dirty').textContent = dirty;
+
+      const lastDiaperEl = document.getElementById('last-diaper-time');
+      if (todayDiapers.length > 0) {
+        const lastTime = new Date(Math.max(...todayDiapers.map(d => new Date(d.timestamp))));
+        lastDiaperEl.innerHTML = `<span>Last change: </span><strong>${getTimeSince(lastTime)}</strong>`;
+      } else {
+        lastDiaperEl.innerHTML = '';
+      }
+    }
+
+    function renderDiaperChart() {
+      const container = document.getElementById('diaper-chart');
+      const data = getLast14DaysDiaperData();
+      const max = Math.max(...data.map(d => d.wet + d.dirty), 10);
+
+      let html = '';
+      data.forEach(d => {
+        const wetHeight = max > 0 ? (d.wet / max) * 100 : 0;
+        const dirtyHeight = max > 0 ? (d.dirty / max) * 100 : 0;
+        html += `
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar-area">
+              <div class="chart-bar stacked top dirty" style="height: ${dirtyHeight}%"></div>
+              <div class="chart-bar stacked wet" style="height: ${wetHeight}%"></div>
+            </div>
+            <div class="chart-label">${d.label}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Helpers
+    function getLast14DaysData(items, valueKey) {
+      const days = [];
+      const today = new Date();
+
+      for (let i = 13; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+
+        const dayItems = items.filter(item => {
+          const itemDate = new Date(item.timestamp);
+          return itemDate >= dayStart && itemDate < dayEnd;
+        });
+
+        const value = valueKey === 'ounces'
+          ? dayItems.reduce((sum, item) => sum + item.ounces, 0)
+          : dayItems.length;
+
+        days.push({
+          label: dayStart.getDate(),
+          value,
+          isToday: i === 0
+        });
+      }
+      return days;
+    }
+
+    function getLast14DaysDiaperData() {
+      const days = [];
+      const today = new Date();
+
+      for (let i = 13; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+
+        const dayDiapers = diapers.filter(d => {
+          const dDate = new Date(d.timestamp);
+          return dDate >= dayStart && dDate < dayEnd;
+        });
+
+        const wet = dayDiapers.filter(d => d.type === 'wet').length;
+        const dirty = dayDiapers.filter(d => d.type === 'dirty').length;
+        const both = dayDiapers.filter(d => d.type === 'both').length;
+
+        days.push({
+          label: dayStart.getDate(),
+          wet: wet + both,
+          dirty: dirty + both,
+          isToday: i === 0
+        });
+      }
+      return days;
+    }
+
+    function formatTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (date.toDateString() === today.toDateString()) return 'Today';
+      if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function getTimeSince(date) {
+      const diff = Date.now() - date.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      if (hours > 0) return `${hours}h ${mins}m ago`;
+      return `${mins}m ago`;
+    }
+  </script>
+</body>
 </html>
