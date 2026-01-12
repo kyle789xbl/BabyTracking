@@ -172,7 +172,6 @@
       font-weight: 600;
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       background: white;
@@ -206,7 +205,6 @@
       box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
     }
 
-    /* Chart */
     .chart-container {
       height: 9rem;
       display: flex;
@@ -240,10 +238,6 @@
       transition: height 0.3s;
     }
 
-    .chart-bar.today {
-      background: #3b82f6;
-    }
-
     .chart-bar.stacked {
       border-radius: 0;
     }
@@ -252,21 +246,10 @@
       border-radius: 0.25rem 0.25rem 0 0;
     }
 
-    .chart-bar.wet {
-      background: #06b6d4;
-    }
-
-    .chart-bar.dirty {
-      background: #f59e0b;
-    }
-
-    .chart-bar.formula {
-      background: #3b82f6;
-    }
-
-    .chart-bar.breast {
-      background: #ec4899;
-    }
+    .chart-bar.wet { background: #06b6d4; }
+    .chart-bar.dirty { background: #f59e0b; }
+    .chart-bar.formula { background: #3b82f6; }
+    .chart-bar.breast { background: #ec4899; }
 
     .chart-label {
       font-size: 0.625rem;
@@ -300,7 +283,6 @@
     .legend-dot.blue { background: #3b82f6; }
     .legend-dot.pink { background: #ec4899; }
 
-    /* Scroll Wheel */
     .wheel-container {
       display: flex;
       justify-content: center;
@@ -420,14 +402,26 @@
       width: 0.75rem;
     }
 
-    /* Milk Type Buttons */
-    .milk-type-buttons {
+    .toggle-row {
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
 
-    .milk-type-btn {
+    .toggle-group {
+      flex: 1;
+    }
+
+    .toggle-group-half {
+      flex: 0.5;
+    }
+
+    .milk-type-buttons, .unit-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .milk-type-btn, .unit-btn {
       flex: 1;
       padding: 0.75rem;
       border-radius: 0.75rem;
@@ -456,7 +450,12 @@
       border-color: #f9a8d4;
     }
 
-    /* Diaper Type Buttons */
+    .unit-btn.active {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-color: #93c5fd;
+    }
+
     .type-buttons {
       display: flex;
       gap: 0.5rem;
@@ -498,7 +497,6 @@
       border-color: #c4b5fd;
     }
 
-    /* Feed/Diaper List */
     .list-item {
       display: flex;
       align-items: center;
@@ -622,7 +620,6 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Auth Screen */
     .auth-container {
       min-height: 100vh;
       display: flex;
@@ -826,13 +823,11 @@
 </head>
 <body>
 
-  <!-- Loading Screen -->
   <div id="loading-screen" class="loading">
     <div class="emoji">👶</div>
     <p>Loading...</p>
   </div>
 
-  <!-- Auth Screen -->
   <div id="auth-screen" class="auth-container hidden">
     <div class="auth-box">
       <div class="auth-logo">
@@ -864,7 +859,6 @@
     </div>
   </div>
 
-  <!-- Main App -->
   <div id="app-screen" class="hidden">
     <div class="header">
       <div class="header-content">
@@ -877,7 +871,6 @@
     </div>
 
     <div class="container">
-      <!-- Tabs -->
       <div class="tabs">
         <button class="tab active" id="tab-feeds" onclick="switchTab('feeds')">
           <span>🍼</span> Feeds
@@ -887,15 +880,13 @@
         </button>
       </div>
 
-      <!-- Feeds Tab -->
       <div id="feeds-tab">
-        <!-- Today's Stats -->
         <div class="card">
           <h3 class="card-title">Today's Feeds</h3>
           <div class="stats-grid-4">
             <div class="stat">
               <div class="stat-value" id="feed-total-oz">0</div>
-              <div class="stat-label">Total oz</div>
+              <div class="stat-label" id="feed-total-label">Total oz</div>
             </div>
             <div class="stat">
               <div class="stat-value" id="feed-count">0</div>
@@ -913,7 +904,6 @@
           <div class="last-feed" id="last-feed-time"></div>
         </div>
 
-        <!-- Chart -->
         <div class="card">
           <h3 class="card-title">Last 14 Days</h3>
           <div class="chart-container" id="feed-chart"></div>
@@ -923,39 +913,43 @@
           </div>
         </div>
 
-        <!-- Log Feed -->
         <div class="card">
           <div class="card-header">
             <h3 class="card-title" id="feed-form-title">Log Feed</h3>
             <button class="reset-btn" onclick="resetToCurrentTime()">Reset to Now</button>
           </div>
           
-          <!-- Milk Type Toggle -->
-          <div class="type-label-center">Milk Type</div>
-          <div class="milk-type-buttons">
-            <button class="milk-type-btn formula active" onclick="setMilkType('formula')">🍼 Formula</button>
-            <button class="milk-type-btn breast" onclick="setMilkType('breast')">🤱 Breast</button>
+          <div class="toggle-row">
+            <div class="toggle-group">
+              <div class="type-label-center">Milk Type</div>
+              <div class="milk-type-buttons">
+                <button class="milk-type-btn formula active" onclick="setMilkType('formula')">🍼 Formula</button>
+                <button class="milk-type-btn breast" onclick="setMilkType('breast')">🤱 Breast</button>
+              </div>
+            </div>
+            <div class="toggle-group-half">
+              <div class="type-label-center">Unit</div>
+              <div class="unit-buttons">
+                <button class="unit-btn oz active" onclick="setUnit('oz')">oz</button>
+                <button class="unit-btn ml" onclick="setUnit('ml')">ml</button>
+              </div>
+            </div>
           </div>
 
-          <div class="wheel-container" id="feed-wheels">
-            <!-- Wheels rendered by JS -->
-          </div>
+          <div class="wheel-container" id="feed-wheels"></div>
           <div class="button-row">
             <button class="btn btn-secondary hidden" id="feed-cancel-btn" onclick="cancelFeedEdit()">Cancel</button>
             <button class="btn btn-primary" id="feed-submit-btn" onclick="saveFeed()">Log Feed</button>
           </div>
         </div>
 
-        <!-- Recent Feeds -->
         <div class="card">
           <h3 class="card-title">Recent Feeds</h3>
           <div id="feeds-list"></div>
         </div>
       </div>
 
-      <!-- Diapers Tab -->
       <div id="diapers-tab" class="hidden">
-        <!-- Today's Stats -->
         <div class="card">
           <h3 class="card-title">Today's Diapers</h3>
           <div class="stats-grid">
@@ -975,7 +969,6 @@
           <div class="last-feed" id="last-diaper-time"></div>
         </div>
 
-        <!-- Chart -->
         <div class="card">
           <h3 class="card-title">Last 14 Days</h3>
           <div class="chart-container" id="diaper-chart"></div>
@@ -985,7 +978,6 @@
           </div>
         </div>
 
-        <!-- Log Diaper -->
         <div class="card">
           <div class="card-header">
             <h3 class="card-title" id="diaper-form-title">Log Diaper</h3>
@@ -997,16 +989,13 @@
             <button class="type-btn dirty" onclick="setDiaperType('dirty')">💩 Dirty</button>
             <button class="type-btn both" onclick="setDiaperType('both')">💧💩 Both</button>
           </div>
-          <div class="wheel-container" id="diaper-wheels">
-            <!-- Wheels rendered by JS -->
-          </div>
+          <div class="wheel-container" id="diaper-wheels"></div>
           <div class="button-row">
             <button class="btn btn-secondary hidden" id="diaper-cancel-btn" onclick="cancelDiaperEdit()">Cancel</button>
             <button class="btn btn-primary" id="diaper-submit-btn" onclick="saveDiaper()">Log Diaper</button>
           </div>
         </div>
 
-        <!-- Recent Diapers -->
         <div class="card">
           <h3 class="card-title">Recent Diapers</h3>
           <div id="diapers-list"></div>
@@ -1016,32 +1005,34 @@
   </div>
 
   <script>
-    // Firebase Config
     const FIREBASE_URL = 'https://babymonitor-19eba-default-rtdb.firebaseio.com';
     const FIREBASE_API_KEY = 'AIzaSyDGas0vg_7l5XXfvxJLsASoV81MqBQxCzk';
     const AUTH_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
     const AUTH_LOGIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
+    const ML_PER_OZ = 29.5735;
 
-    // State
     let user = null;
     let authMode = 'login';
     let feeds = [];
     let diapers = [];
-    let selectedDay = 0; // 0 = today, 1 = yesterday, etc.
+    let selectedDay = 0;
     let selectedHour = new Date().getHours();
     let selectedMinute = new Date().getMinutes();
-    let selectedOunces = 4;
+    let selectedAmount = 4;
+    let selectedUnit = localStorage.getItem('babyTrackerUnit') || 'oz';
     let selectedMilkType = 'formula';
     let selectedDiaperType = 'wet';
     let editingFeedId = null;
     let editingDiaperId = null;
 
-    const ouncesValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+    const ozValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+    const mlValues = [15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300];
     const dayLabels = ['Today', 'Yesterday', '2 days ago', '3 days ago', '4 days ago', '5 days ago', '6 days ago'];
 
-    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+      if (selectedUnit === 'ml') selectedAmount = 120;
       checkAuth();
+      updateUnitButtons();
     });
 
     function checkAuth() {
@@ -1169,7 +1160,6 @@
       showAuth();
     }
 
-    // Tabs
     function switchTab(tab) {
       document.getElementById('tab-feeds').classList.toggle('active', tab === 'feeds');
       document.getElementById('tab-diapers').classList.toggle('active', tab === 'diapers');
@@ -1177,7 +1167,6 @@
       document.getElementById('diapers-tab').classList.toggle('hidden', tab !== 'diapers');
     }
 
-    // Milk Type
     function setMilkType(type) {
       selectedMilkType = type;
       document.querySelectorAll('.milk-type-btn').forEach(btn => {
@@ -1186,7 +1175,52 @@
       });
     }
 
-    // Scroll Wheels
+    function setUnit(unit) {
+      const oldUnit = selectedUnit;
+      selectedUnit = unit;
+      localStorage.setItem('babyTrackerUnit', unit);
+      updateUnitButtons();
+      
+      if (oldUnit !== unit) {
+        if (unit === 'ml') {
+          selectedAmount = Math.round(selectedAmount * ML_PER_OZ);
+          selectedAmount = mlValues.reduce((prev, curr) => 
+            Math.abs(curr - selectedAmount) < Math.abs(prev - selectedAmount) ? curr : prev
+          );
+        } else {
+          selectedAmount = selectedAmount / ML_PER_OZ;
+          selectedAmount = ozValues.reduce((prev, curr) => 
+            Math.abs(curr - selectedAmount) < Math.abs(prev - selectedAmount) ? curr : prev
+          );
+        }
+      }
+      
+      renderFeedWheels();
+      renderFeedStats();
+      renderFeeds();
+    }
+
+    function updateUnitButtons() {
+      document.querySelectorAll('.unit-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.classList.contains(selectedUnit)) btn.classList.add('active');
+      });
+    }
+
+    function toDisplayUnit(oz) {
+      if (selectedUnit === 'ml') return Math.round(oz * ML_PER_OZ);
+      return oz;
+    }
+
+    function toStorageUnit(amount) {
+      if (selectedUnit === 'ml') return amount / ML_PER_OZ;
+      return amount;
+    }
+
+    function getUnitLabel() {
+      return selectedUnit === 'ml' ? 'ml' : 'oz';
+    }
+
     function initWheels() {
       renderFeedWheels();
       renderDiaperWheels();
@@ -1201,7 +1235,7 @@
         <div class="wheel-colon">:</div>
         ${createWheel('Min', 60, selectedMinute, 'feed-min')}
         <div class="wheel-spacer"></div>
-        ${createWheelOunces()}
+        ${createWheelAmount()}
       `;
       setupWheelListeners();
     }
@@ -1260,22 +1294,23 @@
       `;
     }
 
-    function createWheelOunces() {
+    function createWheelAmount() {
+      const values = selectedUnit === 'ml' ? mlValues : ozValues;
       let items = '<div class="wheel-item"></div>';
-      ouncesValues.forEach(oz => {
-        const isSelected = oz === selectedOunces ? 'selected' : '';
-        items += `<div class="wheel-item ${isSelected}" data-value="${oz}">${oz}</div>`;
+      values.forEach(val => {
+        const isSelected = val === selectedAmount ? 'selected' : '';
+        items += `<div class="wheel-item ${isSelected}" data-value="${val}">${val}</div>`;
       });
       items += '<div class="wheel-item"></div>';
 
       return `
         <div class="wheel-wrapper">
-          <div class="wheel-label">Ounces</div>
+          <div class="wheel-label">${getUnitLabel()}</div>
           <div class="wheel">
             <div class="wheel-fade-top"></div>
             <div class="wheel-fade-bottom"></div>
             <div class="wheel-highlight"></div>
-            <div class="wheel-scroll" id="feed-oz" data-type="feed-oz">${items}</div>
+            <div class="wheel-scroll" id="feed-amount" data-type="feed-amount">${items}</div>
           </div>
         </div>
       `;
@@ -1286,12 +1321,15 @@
         const type = wheel.dataset.type;
         const itemHeight = 44;
 
-        // Set initial scroll position
         let initialIndex = 0;
         if (type === 'feed-day' || type === 'diaper-day') initialIndex = selectedDay;
         else if (type === 'feed-hour' || type === 'diaper-hour') initialIndex = selectedHour;
         else if (type === 'feed-min' || type === 'diaper-min') initialIndex = selectedMinute;
-        else if (type === 'feed-oz') initialIndex = ouncesValues.indexOf(selectedOunces);
+        else if (type === 'feed-amount') {
+          const values = selectedUnit === 'ml' ? mlValues : ozValues;
+          initialIndex = values.indexOf(selectedAmount);
+          if (initialIndex === -1) initialIndex = values.indexOf(selectedUnit === 'ml' ? 120 : 4);
+        }
 
         wheel.scrollTop = initialIndex * itemHeight;
 
@@ -1322,15 +1360,10 @@
       const value = items[index]?.dataset.value;
       if (value === undefined) return;
 
-      if (type === 'feed-day' || type === 'diaper-day') {
-        selectedDay = parseInt(value);
-      } else if (type === 'feed-hour' || type === 'diaper-hour') {
-        selectedHour = parseInt(value);
-      } else if (type === 'feed-min' || type === 'diaper-min') {
-        selectedMinute = parseInt(value);
-      } else if (type === 'feed-oz') {
-        selectedOunces = parseFloat(value);
-      }
+      if (type === 'feed-day' || type === 'diaper-day') selectedDay = parseInt(value);
+      else if (type === 'feed-hour' || type === 'diaper-hour') selectedHour = parseInt(value);
+      else if (type === 'feed-min' || type === 'diaper-min') selectedMinute = parseInt(value);
+      else if (type === 'feed-amount') selectedAmount = parseFloat(value);
     }
 
     function resetToCurrentTime() {
@@ -1338,13 +1371,12 @@
       selectedDay = 0;
       selectedHour = now.getHours();
       selectedMinute = now.getMinutes();
-      selectedOunces = 4;
+      selectedAmount = selectedUnit === 'ml' ? 120 : 4;
       selectedMilkType = 'formula';
       setMilkType('formula');
       initWheels();
     }
 
-    // Diaper Type
     function setDiaperType(type) {
       selectedDiaperType = type;
       document.querySelectorAll('.type-btn').forEach(btn => {
@@ -1353,7 +1385,6 @@
       });
     }
 
-    // Get date from day offset
     function getDateFromDayOffset(dayOffset, hour, minute) {
       const date = new Date();
       date.setDate(date.getDate() - dayOffset);
@@ -1361,7 +1392,6 @@
       return date;
     }
 
-    // Feeds CRUD
     async function fetchFeeds() {
       if (!user) return;
       try {
@@ -1385,10 +1415,11 @@
       if (!user) return;
 
       const feedTime = getDateFromDayOffset(selectedDay, selectedHour, selectedMinute);
+      const ouncesToStore = toStorageUnit(selectedAmount);
 
       const feedData = {
         timestamp: feedTime.toISOString(),
-        ounces: selectedOunces,
+        ounces: ouncesToStore,
         milkType: selectedMilkType,
         createdAt: new Date().toISOString()
       };
@@ -1436,7 +1467,6 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // Calculate day offset
       const feedDay = new Date(feedDate);
       feedDay.setHours(0, 0, 0, 0);
       const diffDays = Math.round((today - feedDay) / (1000 * 60 * 60 * 24));
@@ -1444,7 +1474,13 @@
       selectedDay = Math.min(diffDays, 6);
       selectedHour = feedDate.getHours();
       selectedMinute = feedDate.getMinutes();
-      selectedOunces = feed.ounces;
+      
+      const displayAmount = toDisplayUnit(feed.ounces);
+      const values = selectedUnit === 'ml' ? mlValues : ozValues;
+      selectedAmount = values.reduce((prev, curr) => 
+        Math.abs(curr - displayAmount) < Math.abs(prev - displayAmount) ? curr : prev
+      );
+      
       selectedMilkType = feed.milkType || 'formula';
       editingFeedId = id;
 
@@ -1476,6 +1512,7 @@
 
       let html = '';
       let lastDate = '';
+      const unit = getUnitLabel();
 
       feeds.slice(0, 20).forEach(feed => {
         const dateStr = formatDate(feed.timestamp);
@@ -1488,13 +1525,15 @@
         const milkType = feed.milkType || 'formula';
         const iconClass = milkType === 'breast' ? 'breast' : 'feed';
         const emoji = milkType === 'breast' ? '🤱' : '🍼';
+        const displayAmount = toDisplayUnit(feed.ounces);
+        const displayStr = selectedUnit === 'ml' ? Math.round(displayAmount) : displayAmount.toFixed(1).replace(/\.0$/, '');
         
         html += `
           <div class="list-item ${isEditing}">
             <div class="list-item-left">
               <div class="list-icon ${iconClass}">${emoji}</div>
               <div class="list-item-info">
-                <h4>${feed.ounces} oz <span class="milk-badge ${milkType}">${milkType}</span></h4>
+                <h4>${displayStr} ${unit} <span class="milk-badge ${milkType}">${milkType}</span></h4>
                 <p>${formatTime(feed.timestamp)}</p>
               </div>
             </div>
@@ -1527,10 +1566,17 @@
       const formulaOz = todayFeeds.filter(f => f.milkType !== 'breast').reduce((sum, f) => sum + f.ounces, 0);
       const breastOz = todayFeeds.filter(f => f.milkType === 'breast').reduce((sum, f) => sum + f.ounces, 0);
 
-      document.getElementById('feed-total-oz').textContent = totalOz;
+      const unit = getUnitLabel();
+      const formatAmount = (oz) => {
+        const val = toDisplayUnit(oz);
+        return selectedUnit === 'ml' ? Math.round(val) : val.toFixed(1).replace(/\.0$/, '');
+      };
+
+      document.getElementById('feed-total-oz').textContent = formatAmount(totalOz);
       document.getElementById('feed-count').textContent = count;
-      document.getElementById('feed-formula-oz').textContent = formulaOz;
-      document.getElementById('feed-breast-oz').textContent = breastOz;
+      document.getElementById('feed-formula-oz').textContent = formatAmount(formulaOz);
+      document.getElementById('feed-breast-oz').textContent = formatAmount(breastOz);
+      document.getElementById('feed-total-label').textContent = `Total ${unit}`;
 
       const lastFeedEl = document.getElementById('last-feed-time');
       if (todayFeeds.length > 0) {
@@ -1544,12 +1590,15 @@
     function renderFeedChart() {
       const container = document.getElementById('feed-chart');
       const data = getLast14DaysFeedData();
-      const max = Math.max(...data.map(d => d.formula + d.breast), 20);
+      const maxOz = Math.max(...data.map(d => d.formula + d.breast), 20);
+      const max = toDisplayUnit(maxOz);
 
       let html = '';
       data.forEach(d => {
-        const formulaHeight = max > 0 ? (d.formula / max) * 100 : 0;
-        const breastHeight = max > 0 ? (d.breast / max) * 100 : 0;
+        const formulaDisplay = toDisplayUnit(d.formula);
+        const breastDisplay = toDisplayUnit(d.breast);
+        const formulaHeight = max > 0 ? (formulaDisplay / max) * 100 : 0;
+        const breastHeight = max > 0 ? (breastDisplay / max) * 100 : 0;
         html += `
           <div class="chart-bar-wrapper">
             <div class="chart-bar-area">
@@ -1583,17 +1632,11 @@
         const formula = dayFeeds.filter(f => f.milkType !== 'breast').reduce((sum, f) => sum + f.ounces, 0);
         const breast = dayFeeds.filter(f => f.milkType === 'breast').reduce((sum, f) => sum + f.ounces, 0);
 
-        days.push({
-          label: dayStart.getDate(),
-          formula,
-          breast,
-          isToday: i === 0
-        });
+        days.push({ label: dayStart.getDate(), formula, breast, isToday: i === 0 });
       }
       return days;
     }
 
-    // Diapers CRUD
     async function fetchDiapers() {
       if (!user) return;
       try {
@@ -1668,7 +1711,6 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // Calculate day offset
       const diaperDay = new Date(diaperDate);
       diaperDay.setHours(0, 0, 0, 0);
       const diffDays = Math.round((today - diaperDay) / (1000 * 60 * 60 * 24));
@@ -1813,17 +1855,11 @@
         const dirty = dayDiapers.filter(d => d.type === 'dirty').length;
         const both = dayDiapers.filter(d => d.type === 'both').length;
 
-        days.push({
-          label: dayStart.getDate(),
-          wet: wet + both,
-          dirty: dirty + both,
-          isToday: i === 0
-        });
+        days.push({ label: dayStart.getDate(), wet: wet + both, dirty: dirty + both, isToday: i === 0 });
       }
       return days;
     }
 
-    // Helpers
     function formatTime(timestamp) {
       return new Date(timestamp).toLocaleTimeString('en-US', {
         hour: 'numeric',
